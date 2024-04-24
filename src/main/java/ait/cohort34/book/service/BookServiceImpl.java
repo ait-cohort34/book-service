@@ -5,11 +5,17 @@ import ait.cohort34.book.dao.BookRepository;
 import ait.cohort34.book.dao.PublisherRepository;
 import ait.cohort34.book.dto.AuthorDto;
 import ait.cohort34.book.dto.BookDto;
+import ait.cohort34.book.dto.exceptions.EntityNotFoundException;
+import ait.cohort34.book.model.Author;
 import ait.cohort34.book.model.Book;
+import ait.cohort34.book.model.Publisher;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,24 +32,38 @@ public class BookServiceImpl implements BookService{
         if (bookRepository.existsById(bookDto.getIsbn())){
             return false;
         }
-        Book book = modelMapper.map(bookDto, Book.class);
+        // Publisher handle
+        Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
+                .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
+        // Authors handle
+        Set<Author> authors = bookDto.getAuthors().stream()
+                .map(a -> authorRepository.findById(a.getName()).orElse(authorRepository.save(new Author(a.getName(), a.getBirthDate()))))
+                .collect(Collectors.toSet());
+        Book book = new Book(bookDto.getIsbn(), bookDto.getTitle(), authors, publisher);
         bookRepository.save(book);
         return true;
     }
 
     @Override
     public BookDto findBookByIsbn(String isbn) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        return modelMapper.map(book, BookDto.class);
     }
 
+    @Transactional
     @Override
     public BookDto remove(String isbn) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        bookRepository.deleteById(isbn);
+        return modelMapper.map(book, BookDto.class);
     }
 
+    @Transactional
     @Override
     public BookDto updateBook(String isbn, String title) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        book.setTitle(title);
+        return modelMapper.map(book, BookDto.class);
     }
 
     @Override
