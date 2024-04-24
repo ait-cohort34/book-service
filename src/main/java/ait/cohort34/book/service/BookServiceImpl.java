@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
 
     final BookRepository bookRepository;
     final AuthorRepository authorRepository;
@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService{
     @Transactional
     @Override
     public boolean addBook(BookDto bookDto) {
-        if (bookRepository.existsById(bookDto.getIsbn())){
+        if (bookRepository.existsById(bookDto.getIsbn())) {
             return false;
         }
         // Publisher handle
@@ -66,24 +66,33 @@ public class BookServiceImpl implements BookService{
         return modelMapper.map(book, BookDto.class);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Iterable<BookDto> findBooksByAuthor(String authorName) {
-        return null;
+        return bookRepository.findByAuthorsName(authorName)
+                .map(b -> modelMapper.map(b, BookDto.class))
+                .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Iterable<BookDto> findBooksByPublisher(String publisherName) {
-        return null;
+        return bookRepository.findByPublisherPublisherName(publisherName)
+                .map(b -> modelMapper.map(b, BookDto.class))
+                .toList();
     }
 
     @Override
     public Iterable<AuthorDto> findBookAuthors(String isbn) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        return book.getAuthors().stream()
+                .map(a -> modelMapper.map(a, AuthorDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<String> findPublishersByAuthor(String authorName) {
-        return null;
+        return publisherRepository.findByPublishersAuthor(authorName);
     }
 
     @Override
