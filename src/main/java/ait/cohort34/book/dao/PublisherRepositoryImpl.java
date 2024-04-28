@@ -10,18 +10,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class PublisherReposititoryImpl implements PublisherRepository{
+public class PublisherRepositoryImpl implements PublisherRepository{
 
     @PersistenceContext
     EntityManager em;
 
     @Override
     public List<String> findByPublishersAuthor(String authorName) {
+        // TODO findByPublishersAuthor
         return List.of();
     }
 
     @Override
     public Stream<Publisher> findDistinctByBooksAuthorsName(String authorName) {
+        // TODO findDistinctByBooksAuthorsName
         return Stream.empty();
     }
 

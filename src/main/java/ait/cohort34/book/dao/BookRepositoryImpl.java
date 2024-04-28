@@ -16,17 +16,19 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Stream<Book> findByAuthorsName(String authorName) {
+        // TODO findByAuthorsName
         return Stream.empty();
     }
 
     @Override
     public Stream<Book> findByPublisherPublisherName(String name) {
+        // TODO findByPublisherPublisherName
         return Stream.empty();
     }
 
     @Override
     public void deleteByAuthorsName(String name) {
-
+        // TODO deleteByAuthorsName
     }
 
     @Override
@@ -42,7 +44,7 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Optional<Book> findById(String isbn) {
-        return Optional.empty();
+        return Optional.ofNullable(em.find(Book.class, isbn));
     }
 
     @Override
