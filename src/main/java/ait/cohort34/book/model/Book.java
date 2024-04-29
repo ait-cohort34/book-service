@@ -26,5 +26,6 @@ public class Book {
             )
     Set<Author> authors;
     @ManyToOne
+            @JoinColumn(name = "publisher_publisher_name")
     Publisher publisher;
 }
