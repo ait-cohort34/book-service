@@ -16,19 +16,23 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Stream<Book> findByAuthorsName(String authorName) {
-        // TODO findByAuthorsName
-        return Stream.empty();
+        return em.createQuery("select b from Book b join b.authors a where a.name=?1", Book.class)
+                .setParameter(1, authorName)
+                .getResultStream();
     }
 
     @Override
     public Stream<Book> findByPublisherPublisherName(String name) {
-        // TODO findByPublisherPublisherName
-        return Stream.empty();
+        return em.createQuery("select b from Book b join b.publisher p where p.publisherName=?1", Book.class)
+                .setParameter(1, name)
+                .getResultStream();
     }
 
     @Override
     public void deleteByAuthorsName(String name) {
-        // TODO deleteByAuthorsName
+        em.createQuery("delete from Book b where :name member of b.authors")
+                .setParameter("name", name)
+                .executeUpdate();
     }
 
     @Override
@@ -49,6 +53,6 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public void deleteById(String isbn) {
-
+        em.remove(em.find(Book.class, isbn));
     }
 }
